@@ -1,0 +1,31 @@
+{
+  "name": "pipe2js",
+  "version": "0.3.12",
+  "description": "Use javaScript flavor to Map, Filter, Reduce standard input to standard output. This tool use stream and can process huge files.",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zibx/pipe2js"
+  },
+  "bin": {
+    "pipe2js": "main.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "shell",
+    "stdio",
+    "map",
+    "reduce",
+    "filter",
+    "sh"
+  ],
+  "author": "Ivan Kubota",
+  "license": "MPL-2.0",
+  "dependencies": {
+  }
+}
