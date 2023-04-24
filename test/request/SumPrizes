@@ -1,0 +1,1 @@
+-f "line.indexOf(\"win \")>0" -m "line.split(\"TYPE:\")[1]" -r -n "a+b"

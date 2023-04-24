@@ -1,0 +1,3 @@
+# EXCEPTION
+# EXCEPTION TEXT: a is not a function
+-m 'a()+`x${line}`'

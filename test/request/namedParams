@@ -1,0 +1,2 @@
+# Should convert array elements to named
+-m 'line.split(":")' -m -k 'login, _, UID, GID,, home, shell' -m '`${line.login} home at ${line.home}`'

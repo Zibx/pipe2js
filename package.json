@@ -8,7 +8,8 @@
     "url": "https://github.com/Zibx/pipe2js"
   },
   "bin": {
-    "pipe2js": "main.js"
+    "pipe2js": "main.js",
+    "awkjs": "main.js"
   },
   "directories": {
     "test": "test"
@@ -27,5 +28,11 @@
   "author": "Ivan Kubota",
   "license": "MPL-2.0",
   "dependencies": {
+    "stream-json": "^1.7.5"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "shell-quote": "^1.8.0",
+    "sinon": "^15.0.1"
   }
 }

@@ -1,0 +1,3 @@
+# Should return sum, but returns nothing. Last map returns correct list
+# Fixed 2 feb 2023
+-j -m 'Object.values(obj)' -flat -f 'obj.win' -m 'obj.prize' -r 'a+b'

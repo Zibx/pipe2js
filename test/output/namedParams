@@ -1,0 +1,7 @@
+root home at /root
+daemon home at /usr/sbin
+sync home at /bin
+_apt home at /nonexistent
+tss home at /var/lib/tpm
+landscape home at /var/lib/landscape
+julia home at /home/julia

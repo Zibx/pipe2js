@@ -1,0 +1,2 @@
+# Should take each line as a JSON object
+-j -f "line.b" -m "line.b"
