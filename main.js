@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 var StreamValues = require('stream-json/streamers/StreamValues');
-var stream = require('stream');
+
+var debug = function nop() {console.log.apply(console, arguments)};
 var debug = function nop() {};
 var fnFactory = function( processFn, nextFn, finishFn ) {
 	return function(awk, args) {
@@ -81,7 +82,9 @@ var f = [];
 var x = JSONselect.match('.prop1', f,[{a: 2}, {prop1: 4}])
 debugger
 */
-
+var j=0;
+var objs1 = [];
+var objs2 = [];
 var keys = {
 	'--flat': {
 		alias: '-flat',
@@ -114,36 +117,63 @@ cat tickets.json | pipe2js -j --flat -f "obj.amount===10" -m -t '$\{obj.win?"+":
 		fn: fnFactory( function( code ) {
       this.jsonParser = StreamValues.withParser();
       var _self = this;
+var x = 0;
+      /*this.jsonParser.on('end', (data) => {
+        console.log(';',x)
+        objs1;
+        objs2;
+        //debugger
 
+        //_self.awk.pipeline[ _self.pipelineCursor + 1 ].finish( _self.pipelineCursor + 1 );
+      });*/
       this.jsonParser.on('end', (data) => {
         callFinish.call(_self, _self.pipelineCursor);
-        _self.jsonParser.end();
-        //_self.awk.pipeline[ _self.pipelineCursor + 1 ].finish( _self.pipelineCursor + 1 );
       });
       this.jsonParser.on('data', (data) => {
         var obj = data.value;
+        /*x++;
+        console.log('w;', x, obj.f)
+
+        debug(obj)
+        objs2.push(obj);*/
         _self.awk.pipeline[ _self.pipelineCursor + 1 ].consume( obj, _self.pipelineCursor + 1 );
       });
-      this.readable = new stream.Readable();
-      this.readable._read = function(){
-          
-      }
+      /*this.readable = new stream.Readable();
+      this.readable._read = function(a,b,c){
+
+          debug('wtf',a,b,c)
+      }*/
       //new ReadString('{"a":1}{"b":2}').pipe(this.jsonParser);
       //this.jsonParser = new parser({jsonStreaming: true, packValues: true, streamValues: false})
 			this.exp = code;
       debug('init pipe to parser');
-      this.readable.pipe(this.jsonParser);
+      //this.readable.pipe(this.jsonParser);
       debug('after init pipe to parser');
 
       return new Function( '', 'return (a, b, i, total, line, obj)=>a' )();
 			//return new Function( '', 'return (a, b, i, total, line, obj)=>i>0?b+"\\n"+a:a' )();
 		}, function( pipelineCursor ) {
-      debug('before write to readable')
-      this.readable.push(this.current, 'utf8');
-      //new ReadString(this.current).pipe(this.jsonParser);
       this.pipelineCursor = pipelineCursor;
-		}, function( pipelineCursor ) {
 
+      j++
+      debug('before write to readable')
+      //objs1.push(JSON.parse(this.current));
+      //this.readable.push(this.current, 'utf8');
+
+      this.jsonParser.write(this.current);
+      //var rs = new ReadString(this.current);
+      //rs.pipe(this.jsonParser);
+
+      //rs.pipe(this.current);
+      /*this.lastRS = rs;
+      this.lastRS.cat = this.current;
+      this.jsonParser.setMaxListeners(Infinity)
+      var _self = this;
+      rs.on('end', function(a,b,c){
+        rs.unpipe(_self.jsonParser);
+      })*/
+		}, function( pipelineCursor ) {
+//console.log(j, this.lastRS.cat)
 			/*try {
 				var obj = JSON.parse( this.current );
 			} catch( e ) {
@@ -151,7 +181,15 @@ cat tickets.json | pipe2js -j --flat -f "obj.amount===10" -m -t '$\{obj.win?"+":
 				process.exit( 1 );
 			}*/
       debug('finish write to readable')
-      this.readable.push(null);
+      //this.readable.push(null);
+      this.jsonParser.end();
+/*      var _self = this;
+      this.lastRS.on('end', function(a,b,c){
+        _self.jsonParser.end();
+        callFinish.call(_self, _self.pipelineCursor);
+        console.log(x);
+      });*/
+
       //new ReadString('').pipe(this.jsonParser);
 			//this.awk.pipeline[ pipelineCursor + 1 ].consume( obj, pipelineCursor + 1 );
 			//this.awk.pipeline[ pipelineCursor + 1 ].finish( pipelineCursor + 1 );
@@ -202,6 +240,16 @@ Usage Example:
 			return new Function( '', 'return (line, previous, i, total, a, obj)=>(\n' + this.decorate( code ) + '\n)' )();
 		}, callNext )
 	},
+  '--count': {
+    primary: true,
+    description: 'count elements',
+    alias: '-C',
+    fn: fnFactory( function( code ) {
+      return new Function( '', 'return (a, b, i, total)=>i+1' )();
+    }, function( pipelineCursor ) {
+
+    }, callNextAndFinish )
+  },
 	'--reduce': {
 		primary: true,
 		description: 'reduce given items. Great for calculating sum',
@@ -468,27 +516,51 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
 	var awk = new AWK();
 	awk.parseArgs([].slice.call(process.argv, 2));
 
-	const DEBUG = false;
+	var DEBUG = false;
   var fs = require( 'fs' );
 
   if(DEBUG) {
 		var fs = require( 'fs' );
-		var data = fs.readFileSync( 'test/data/filterData.log' ).toString().split( /\r\n|\n/ );
+		var data = fs.readFileSync( 'test/input/json_log' ).toString().split( /\r\n|\n/ );
+		//var data = fs.readFileSync( 'test/data/filterData.log' ).toString().split( /\r\n|\n/ );
 		/*var data = fs.readFileSync('test/testData.log').toString().split(/\r\n|\n/);*/
 		data.forEach( function( line ) {
 			awk.consume( line );
 		} );
-		awk.finish( );
+    awk.afterEnd = function() {
+      process.exit(0);
+    }
+    awk.finish( );
 
-		process.exit( 0 )
+
 	}
 
+  DEBUG = false;
+
 	const readline = require('readline');
-	const rl = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout,
-		terminal: false
-	});
+  if(DEBUG){
+/*    var d = fs.readFileSync('test/input/json_log', 'utf-8');
+    var jj = 0;
+    fs.writeFileSync('test/input/json_log', d.replace(/(\{)/g, function(){
+        jj++;
+        return `{"f": ${jj}, `
+    }));*/
+
+
+    var rl = readline.createInterface({
+      input: fs.createReadStream('test/input/json_log', 'utf-8'),
+      output: process.stdout,
+      terminal: false
+    });
+    //rl = fs.createReadStream('test/input/json_log', 'utf-8');
+  }else{
+    var rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: false
+    });
+  }
+
 
 	var currentLineNumber = 0;
 

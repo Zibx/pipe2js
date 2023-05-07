@@ -69,6 +69,8 @@ describe('Test all cases', function() {
 			var lines = inputData.split(/\r\n|\n/);
 
 			var result = [];
+
+      ``
 			awk.output = function(data){
 			    result.push(data);
 			};
@@ -93,6 +95,7 @@ describe('Test all cases', function() {
 				var stub = sinon.stub( process, 'exit' ).callsFake( () => {
 					throw new Error( 'Error' );
 				} );
+
 				for( var i = 0; i < lines.length; i++ ) {
 					var line = lines[ i ];
 					awk.consume( line );

@@ -1,6 +1,6 @@
 {
   "name": "pipe2js",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "description": "Use javaScript flavor to Map, Filter, Reduce standard input to standard output. This tool use stream and can process huge files.",
   "main": "main.js",
   "repository": {
